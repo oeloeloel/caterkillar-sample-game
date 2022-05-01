@@ -1,7 +1,5 @@
 # A sample boss battle by @Akzidenz
 
-
-
 $gtk.reset
 
 def tick(args)
@@ -10,8 +8,6 @@ def tick(args)
   calc args
   render args
   game_inputs args
-
-  args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
 end
 
 ######################
