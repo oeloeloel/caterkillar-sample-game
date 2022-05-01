@@ -2,7 +2,7 @@
 
 $gtk.reset
 
-def tick(args)
+def tick args
   defaults args
   player_inputs args
   calc args
@@ -24,7 +24,7 @@ def game_defaults args
   args.state.game_state ||= :playing # will be :win or :lose later on
 end
 
-def player_defaults(args)
+def player_defaults args
   args.state.player.speed ||= 14
   args.state.player.dir ||= [0, 0]
   args.state.player.animation_frame ||= 0
@@ -57,7 +57,7 @@ def player_inputs args
   args.state.player.dir = [args.inputs.left_right, args.inputs.up_down]
 end
 
-def game_inputs(args)
+def game_inputs args
   $gtk.reset seed: Time.now.to_f * 1000 if args.inputs.keyboard.key_down.backspace
 end
 
@@ -65,16 +65,16 @@ end
 # CALCULATE STUFF EVERY TICK
 ############################
 
-def calc(args)
+def calc args
   # stop calculating if the game is not playing
   return unless args.state.game_state == :playing
-  
+
   calc_player args
   calc_enemy args
   check_collisions args
 end
 
-def calc_player(args)
+def calc_player args
   # update player based on movement direction
   case args.state.player.dir
   when [0, 0] # no movement
@@ -114,7 +114,7 @@ def calc_player(args)
   args.state.player.path = "sprites/ladybird-#{args.state.player.animation_frame.to_i}.png"
 end
 
-def calc_enemy(args)
+def calc_enemy args
   # determine enemy behaviour
   case args.state.enemy.mode
   when :get_started
@@ -394,7 +394,7 @@ end
 # wait after enemy head appears on screen
 def enemy_pause_2 args
   args.state.enemy.action_timer -= 1
-  if args.state.enemy.action_timer == 0
+  if args.state.enemy.action_timer.zero?
     args.state.enemy.mode = :move_2
   end
 end
@@ -423,14 +423,6 @@ end
 # HELPERS
 #########
 
-def min a, b
-  a < b ? a : b
-end
-
-def max a, b
-  a > b ? a : b
-end
-
 def combine_rects array_of_rects
   # re-orient the data from an array of rects to a rect of arrays
   lefts = []
@@ -443,6 +435,6 @@ def combine_rects array_of_rects
     tops << rect.y + rect.h
     bottoms << rect.y
   end
-  
+
   [lefts.min, bottoms.min, rights.max - lefts.min, tops.max - bottoms.min]
 end
