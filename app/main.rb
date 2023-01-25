@@ -335,20 +335,20 @@ def enemy_get_started args
   args.state.enemy.dir = 1 + rand(4) # 1: up, 2: right, 3: down, 4: left
   case args.state.enemy.dir
   when 1 # up
-    args.state.enemy.x = rand(1280 - args.state.enemy.w)
+    args.state.enemy.x = rand(1280 - args.state.enemy.w*2) + args.state.enemy.w
     args.state.enemy.y = -args.state.enemy.h
     args.state.enemy.angle = 0
   when 2 # right
     args.state.enemy.x = -args.state.enemy.w
-    args.state.enemy.y = rand(720 - args.state.enemy.h)
+    args.state.enemy.y = rand(720 - args.state.enemy.h*2) + args.state.enemy.h
     args.state.enemy.angle = 270
   when 3 # down
-    args.state.enemy.x = rand(1280 - args.state.enemy.w)
+    args.state.enemy.x = rand(1280 - args.state.enemy.w*2) + args.state.enemy.w
     args.state.enemy.y = 720
     args.state.enemy.angle = 180
   when 4 # left
     args.state.enemy.x = 1280
-    args.state.enemy.y = rand(720 - args.state.enemy.h)
+    args.state.enemy.y = rand(720 - args.state.enemy.h*2) + args.state.enemy.h
     args.state.enemy.angle = 90
   end
 
