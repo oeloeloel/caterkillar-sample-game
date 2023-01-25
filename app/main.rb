@@ -140,12 +140,14 @@ def calc_enemy_sprites args
   # loop for the current number of enemy segments
   args.state.enemy.num_segments.times do |seg_num|
     # do some calculations for position
+    w_mod = (args.state.enemy.dir < 5 ? 10 : 42) # modify width & height
+    h_mod = (args.state.enemy.dir < 5 ? 8 : 42)  # so segments touch
     seg_x = args.state.enemy.x
     seg_y = args.state.enemy.y
-    seg_y -= (args.state.enemy.h - 8) * seg_num if args.state.enemy.dir == 1
-    seg_x -= (args.state.enemy.w - 10) * seg_num if args.state.enemy.dir == 2
-    seg_y += (args.state.enemy.h - 8) * seg_num if args.state.enemy.dir == 3
-    seg_x += (args.state.enemy.w - 10) * seg_num if args.state.enemy.dir == 4
+    seg_y -= (args.state.enemy.h - h_mod) * seg_num if triple_or(args.state.enemy.dir, 1,5,6)
+    seg_x -= (args.state.enemy.w - w_mod) * seg_num if triple_or(args.state.enemy.dir, 2,6,7)
+    seg_y += (args.state.enemy.h - h_mod) * seg_num if triple_or(args.state.enemy.dir, 3,7,8)
+    seg_x += (args.state.enemy.w - w_mod) * seg_num if triple_or(args.state.enemy.dir, 4,8,5)
     seg_color = 'green'
     seg_color = 'orange' if seg_num == args.state.enemy.num_segments - 1
 
@@ -352,6 +354,13 @@ def enemy_get_started args
     args.state.enemy.angle = 90
   end
 
+  # if enemy has lost over half of its segments, move enemy diagonally.
+  if args.state.enemy.num_segments < 5
+    args.state.enemy.angle += 45 # set to a diagonal angle
+    args.state.enemy.dir += 4 # dir 1-4 is already used so change it to 5-8
+    # 5: left and up, 6: right and up, 7: right and down, 8: left and down
+  end
+
   # set the timer to the duration of the next pause
   args.state.enemy.action_timer = 60 # 1 second
   # set the next mode
@@ -370,16 +379,16 @@ end
 # and then pauses
 def enemy_move_1 args
   case args.state.enemy.dir
-  when 1
+  when 1, 5
     args.state.enemy.y += args.state.enemy.speed
     move_complete = true if args.state.enemy.y > 0
-  when 2
+  when 2, 6
     args.state.enemy.x += args.state.enemy.speed
     move_complete = true if args.state.enemy.x > 0
-  when 3
+  when 3, 7
     args.state.enemy.y -= args.state.enemy.speed
     move_complete = true if args.state.enemy.y < 720 - args.state.enemy.h
-  when 4
+  when 4, 8
     args.state.enemy.x -= args.state.enemy.speed
     move_complete = true if args.state.enemy.x < 1280 - args.state.enemy.w
   end
@@ -410,6 +419,18 @@ def enemy_move_2 args
     args.state.enemy.y -= args.state.enemy.speed
   when 4
     args.state.enemy.x -= args.state.enemy.speed
+  when 5 # Diagonal is faster sqrt(12*12+12*12)=17
+    args.state.enemy.x -= args.state.enemy.speed
+    args.state.enemy.y += args.state.enemy.speed
+  when 6
+    args.state.enemy.x += args.state.enemy.speed
+    args.state.enemy.y += args.state.enemy.speed
+  when 7
+    args.state.enemy.x += args.state.enemy.speed
+    args.state.enemy.y -= args.state.enemy.speed
+  when 8
+    args.state.enemy.x -= args.state.enemy.speed
+    args.state.enemy.y -= args.state.enemy.speed
   end
 
   # enemy movement is finished when it goes completely off-screen
@@ -438,3 +459,8 @@ def combine_rects array_of_rects
 
   [lefts.min, bottoms.min, rights.max - lefts.min, tops.max - bottoms.min]
 end
+
+def triple_or(a, b,c,d)
+  a == b || a == c || a == d # return true if a == any of b, c, or d
+end
+
